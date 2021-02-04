@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Test</title>
+	<script src="./echarts.min.js"></script>
+	<script src="./index.js"></script>
+</head>
+<body>
+	<div id="wsChartContainer" style="width: 1600px; height: 800px;"></div>
+	<script type="text/javascript">
+        const wsChart = echarts.init(document.getElementById('wsChartContainer'));
+		wsChart.showLoading();
+
+        const list = [];
+
+		const websocketHeartbeatJs = new window.WebsocketHeartbeatJs({
+    		url: 'wss://api.xiaodu33603.com:9999/' //这里是你的WS地址
+		});
+
+		websocketHeartbeatJs.onopen = () => {
+			console.log('websocketHeartbeatJs open');
+		}
+		websocketHeartbeatJs.onmessage = (e) => {
+			const data = JSON.parse(e.data);
+			list.push([data.key, data.value]);
+        
+		if(list.length>80) { 
+            list.shift();    //这段代码可以阻止数据堆在一块，但是不知道为啥会抖
+        }
+
+			wsChart.hideLoading();
+			wsChart.setOption({
+				title: {
+	                text: 'Test',
+	            },
+				axisPointer: {
+                    animation: false
+                },
+	            xAxis: {
+	            	type: 'time',
+	            },
+	            yAxis: {},
+	            tooltip: {},
+				series: [{
+	            	name: 'random line',
+	            	type: 'line',
+					symbol: "none",
+	            	smooth:true,
+	            	data: list,
+            	}]
+			});
+		}
+        websocketHeartbeatJs.onclose = () => {
+			console.log('websocketHeartbeatJs close');
+		}
+
+		websocketHeartbeatJs.onreconnect = (e) => {
+    		console.log('websocketHeartbeatJs reconnecting...');
+		}
+
+		websocketHeartbeatJs.onerror = () => {
+    		console.log('websocketHeartbeatJs error');
+		}
+	</script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "devices": {
+    "scanningGun": {
+      "portName": "COM3",
+      "portConfig": {
+        "baudRate": 115200,
+        "dataBits": 8,
+        "parity": "none",
+        "stopBits": 1,
+        "flowControl": false
+      }
+    }
+  }
+}
